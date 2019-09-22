@@ -5,10 +5,13 @@
     "declaration": true,
     "outDir": "lib/",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true
   },
   "include": [
-    "./src/**/*.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules"
