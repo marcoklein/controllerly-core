@@ -8,9 +8,8 @@
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test:watch": "mocha --watch --watch-extensions ts -r ts-node/register test/**/*.spec.ts",
     "build": "tsc && parcel build src/index.ts -d build --out-file index.js",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm test",
-    "version": "git add -A build",
+    "preversion": "npm test",
+    "version": "npm run build && git add -A build",
     "postversion": "git push && git push --tags"
   },
   "repository": {
