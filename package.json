@@ -2,20 +2,21 @@
   "name": "controllerly-core",
   "version": "0.0.4",
   "description": "Controllerly Core for Robust Connection Management with WebRTC.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test:watch": "mocha --watch --watch-extensions ts -r ts-node/register test/**/*.spec.ts",
-    "build": "rimraf build && tsc",
+    "build": "rimraf lib && tsc",
     "preversion": "npm test",
-    "version": "npm run build && git add -A build",
+    "version": "npm run build",
     "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/marcoklein/controllerly-core.git"
   },
+  "files": ["lib/**/*"],
   "keywords": [
     "Gamepad",
     "Remote",

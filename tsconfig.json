@@ -3,8 +3,8 @@
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
-    "outDir": "build/",
-    "strict": false,
+    "outDir": "lib/",
+    "strict": true,
     "esModuleInterop": true
   },
   "include": [
