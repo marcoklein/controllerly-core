@@ -8,8 +8,9 @@
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test:watch": "mocha --watch --watch-extensions ts -r ts-node/register test/**/*.spec.ts",
     "build": "rimraf lib && tsc",
+    "prepare": "npm test && npm run build",
     "preversion": "npm test",
-    "version": "npm run build",
+    "version": "",
     "postversion": "git push && git push --tags"
   },
   "repository": {
