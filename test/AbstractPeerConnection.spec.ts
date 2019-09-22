@@ -101,4 +101,8 @@ describe('AbstractPeerConnection test', () => {
 
     });
 
+    after(() => {
+        peerConnection.connection = undefined;
+    });
+
 });

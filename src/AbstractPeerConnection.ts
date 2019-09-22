@@ -2,6 +2,7 @@
 
 import { DataConnection } from 'peerjs';
 import { Message } from './Message';
+import { MessageManager } from './MessageManager';
 
 /**
  * Super class of the client and server connection.
@@ -28,7 +29,11 @@ export abstract class AbstractPeerConnection {
      * So this number matches the total amount of sent messages.
      */
     private _lastMessageId: number = 0;
-    //private messageMap: CacheArray
+    
+    private _manager: MessageManager;
+
+
+    /* Keep Alive */
 
     /**
      * To cope with the unstability of WebRTC empty message are sent
@@ -37,6 +42,7 @@ export abstract class AbstractPeerConnection {
     private _sendKeepAliveMessage: boolean = true;
     private _keepAliveTimeout: any;
     private _keepAliveInterval: number = 80;
+
 
     constructor() {
     }
@@ -69,7 +75,9 @@ export abstract class AbstractPeerConnection {
 
         // create a new message
         let message = new Message(this._lastMessageId, type, data);
-        message.timestamp = Date.now();
+
+        // store message
+        this._manager.put(message);
 
         // send message data
         this._connection.send(message.toData());
@@ -90,6 +98,9 @@ export abstract class AbstractPeerConnection {
      * Cancels the keep alive timeout and resets it to the interval.
      */
     private resetKeepAliveTimer() {
+        if (!this._sendKeepAliveMessage) {
+            return;
+        }
         clearTimeout(this._keepAliveTimeout);
         this._keepAliveTimeout = setTimeout(() => {
             this.sendKeepAliveMessage();
@@ -103,16 +114,17 @@ export abstract class AbstractPeerConnection {
     
     /* Callbacks */
 
-    private onConnectionDataCallback = (msg: Message) => {
-        if (msg.type) {
-            // acknowledge incoming message
-            this.sendMessage('ACK', msg.id);
+    private onConnectionDataCallback = (msg: Message | any) => {
+        if (msg.ack) {
+            // received acknowledge message
+            this._manager.acknowledge(msg.ack);
+        } else if (msg.type) {
+            // send ACK for received message
+            this._connection.send({ack: msg.id});
 
             // handle internal keep alive messages
             if (msg.type === 'PING') {
                 // do nothing
-            } else if (msg.type === 'ACK') {
-                // TODO mark message as acknowledged
             } else {
                 // inform listener
                 this.onMessage(msg);
@@ -145,6 +157,11 @@ export abstract class AbstractPeerConnection {
             this.connection.off('data', this.onConnectionDataCallback);
             this.connection.off('close', this.onConnectionCloseCallback);
             this.connection.off('error', this.onConnectionErrorCallback);
+            // stop keep alive
+            this.clearTimeouts();
+            // stop the manager
+            this._manager.destroy();
+            this._manager = undefined;
         }
         this._connection = connection;
         if (connection) {
@@ -152,6 +169,7 @@ export abstract class AbstractPeerConnection {
             this.connection.on('data', this.onConnectionDataCallback);
             this.connection.on('close', this.onConnectionCloseCallback);
             this.connection.on('error', this.onConnectionErrorCallback);
+            this._manager = new MessageManager();
         }
     }
 
@@ -165,6 +183,10 @@ export abstract class AbstractPeerConnection {
 
     get totalMessageCount(): number {
         return this._lastMessageId;
+    }
+
+    get manager(): MessageManager {
+        return this._manager;
     }
 
 }
