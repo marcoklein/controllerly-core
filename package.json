@@ -1,6 +1,6 @@
 {
   "name": "controllerly-core",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Controllerly Core for Robust Connection Management with WebRTC.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -16,7 +16,9 @@
     "type": "git",
     "url": "git+https://github.com/marcoklein/controllerly-core.git"
   },
-  "files": ["lib/**/*"],
+  "files": [
+    "lib/**/*"
+  ],
   "keywords": [
     "Gamepad",
     "Remote",
