@@ -9,12 +9,12 @@ export class Message {
     /**
      * Timestamp, when the message was sent.
      */
-    timestamp: number;
-    acknowledged: number;
+    timestamp: number | null = null;
+    acknowledged: number | null = null;
     /**
      * True if the message timed out.
      */
-    timeout: boolean;
+    timeout: boolean = false;
 
     constructor(id: number, type: string, data: any) {
         this.id = id;
@@ -34,6 +34,6 @@ export class Message {
      * Travel time of message - difference of timestamp and acknowledged.
      */
     get latency(): number {
-        return this.timestamp !== undefined && this.acknowledged !== undefined ? this.acknowledged - this.timestamp : null;
+        return this.timestamp !== null && this.acknowledged !== null ? this.acknowledged - this.timestamp : -1;
     }
 }

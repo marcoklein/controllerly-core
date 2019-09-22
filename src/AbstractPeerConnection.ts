@@ -18,7 +18,7 @@ export abstract class AbstractPeerConnection {
     /**
      * Internally used data channel for communication.
      */
-    private _connection: DataConnection;
+    private _connection: DataConnection | undefined;
 
 
     /* Message Tracking */
@@ -30,7 +30,7 @@ export abstract class AbstractPeerConnection {
      */
     private _lastMessageId: number = 0;
     
-    private _manager: MessageManager;
+    private _manager: MessageManager | undefined;
 
 
     /* Keep Alive */
@@ -66,8 +66,11 @@ export abstract class AbstractPeerConnection {
      * @param data 
      */
     sendMessage(type: string, data?: any): Message {
-        if (!this.isConnected) {
+        if (this._connection === undefined || !this.isConnected) {
             throw new Error('Send Message Error: DataConnection is closed.');
+        }
+        if (this._manager === undefined) {
+            throw new Error('Send Message Error: MessageManager is null.');
         }
 
         // create next message id
@@ -115,6 +118,9 @@ export abstract class AbstractPeerConnection {
     /* Callbacks */
 
     private onConnectionDataCallback = (msg: Message | any) => {
+        if (this._manager === undefined || this._connection === undefined) {
+            return;
+        }
         if (msg.ack) {
             // received acknowledge message
             this._manager.acknowledge(msg.ack);
@@ -151,29 +157,29 @@ export abstract class AbstractPeerConnection {
     /**
      * Sets the internally used DataConnection.
      */
-    set connection(connection: DataConnection) {
+    set connection(connection: DataConnection | undefined) {
         if (this._connection) {
             // remove event listeners from old connection
-            this.connection.off('data', this.onConnectionDataCallback);
-            this.connection.off('close', this.onConnectionCloseCallback);
-            this.connection.off('error', this.onConnectionErrorCallback);
+            this._connection.off('data', this.onConnectionDataCallback);
+            this._connection.off('close', this.onConnectionCloseCallback);
+            this._connection.off('error', this.onConnectionErrorCallback);
             // stop keep alive
             this.clearTimeouts();
             // stop the manager
-            this._manager.destroy();
+            if (this._manager) this._manager.destroy();
             this._manager = undefined;
         }
         this._connection = connection;
-        if (connection) {
+        if (this._connection) {
             // add listeners to new connection
-            this.connection.on('data', this.onConnectionDataCallback);
-            this.connection.on('close', this.onConnectionCloseCallback);
-            this.connection.on('error', this.onConnectionErrorCallback);
+            this._connection.on('data', this.onConnectionDataCallback);
+            this._connection.on('close', this.onConnectionCloseCallback);
+            this._connection.on('error', this.onConnectionErrorCallback);
             this._manager = new MessageManager();
         }
     }
 
-    get connection(): DataConnection {
+    get connection(): DataConnection | undefined {
         return this._connection;
     }
 
@@ -185,7 +191,7 @@ export abstract class AbstractPeerConnection {
         return this._lastMessageId;
     }
 
-    get manager(): MessageManager {
+    get manager(): MessageManager | undefined {
         return this._manager;
     }
 

@@ -55,7 +55,7 @@ export class MessageManager {
      * @param messageId 
      */
     private timeout(msg: Message) {
-        msg.acknowledged = undefined;
+        msg.acknowledged = null;
         msg.timeout = true;
 
         this.removeFromPending(msg);
@@ -76,7 +76,7 @@ export class MessageManager {
         const now = Date.now();
         for (let msgId in this._pendingMessages) {
             const msg = this._pendingMessages[msgId];
-            if (msg.timestamp + this.messageTimeout < now) {
+            if (msg.timestamp && msg.timestamp + this.messageTimeout < now) {
                 // timeout
                 this.timeout(msg);
             }
