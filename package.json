@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "description": "Controllerly Core for Robust Connection Management with WebRTC.",
   "main": "build/index.js",
-  "types": "src/index.ts",
+  "types": "build/index.d.ts",
   "scripts": {
     "test": "",
-    "build": "parcel build src/index.ts -d build --out-file index.js",
+    "build": "tsc && parcel build src/index.ts -d build --out-file index.js",
     "prepare": "npm run build",
     "prepublishOnly": "npm test",
     "version": "git add -A build",
