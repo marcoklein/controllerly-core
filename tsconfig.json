@@ -6,7 +6,7 @@
     "outDir": "lib/",
     "strict": true,
     "esModuleInterop": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true
   },
