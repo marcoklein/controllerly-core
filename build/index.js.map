@@ -1,1 +1,0 @@
-{"version":3,"sources":["index.ts"],"names":[],"mappings":";AAAA,QAAQ,IAAI","file":"index.js","sourceRoot":"..\\src","sourcesContent":["console.log('Hello World.');"]}

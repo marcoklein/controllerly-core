@@ -3,12 +3,11 @@
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
-    "emitDeclarationOnly": true,
-    "outDir": "build",
+    "outDir": "build/",
     "strict": false,
     "esModuleInterop": true
   },
-  "files": [
-    "src/index.ts"
+  "include": [
+    "./src/**/*.ts"
   ]
 }
