@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 import { MessageManager } from '../src/MessageManager';
 import { Message } from '../src/Message';
-import { delay } from './Util';
+import { delay } from './TestUtils';
 
 
 describe('MessageManager test', () => {
