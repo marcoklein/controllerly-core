@@ -60,13 +60,13 @@ export class HostedConnection extends AbstractPeerConnection {
 
     gotToConnectedState() {
         // mark as connected
-        this._state = ConnectionState.CONNECTED;
+        this.changeConnectionState(ConnectionState.CONNECTED);
 
         // add to connected clients list in server
     }
 
     handleDisconnect() {
-        this._state = ConnectionState.DISCONNECTED;
+        this.changeConnectionState(ConnectionState.DISCONNECTED);
         // remove hosted connection from server
 
     }
