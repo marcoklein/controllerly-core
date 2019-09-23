@@ -5,21 +5,7 @@ import { AbstractPeerConnection } from '../src/AbstractPeerConnection';
 import { DataConnection } from 'peerjs';
 import { Message } from '../src/Message';
 
-class AbstractPeerConnectionMock extends AbstractPeerConnection {
-
-    protected onMessage(msg: Message): void {
-        throw new Error("Method not implemented.");
-    }
-    protected onConnectionClose(): void {
-        throw new Error("Method not implemented.");
-    }
-    protected onConnectionError(err: any): void {
-        throw new Error("Method not implemented.");
-    }
-
-}
-
-class DataConnectionMock implements DataConnection {
+export class DataConnectionMock implements DataConnection {
     send(data: any): void {
 
     }
@@ -47,6 +33,21 @@ class DataConnectionMock implements DataConnection {
     bufferSize: number;
 }
 
+class AbstractPeerConnectionMock extends AbstractPeerConnection {
+
+    protected onMessage(msg: Message): void {
+        throw new Error("Method not implemented.");
+    }
+    protected onConnectionClose(): void {
+        throw new Error("Method not implemented.");
+    }
+    protected onConnectionError(err: any): void {
+        throw new Error("Method not implemented.");
+    }
+
+}
+
+
 describe('AbstractPeerConnection test', () => {
 
     let peerConnection = new AbstractPeerConnectionMock();
@@ -70,7 +71,7 @@ describe('AbstractPeerConnection test', () => {
         let message: Message;
 
         before(() => {
-            peerConnection.connection = dataConnection;
+            peerConnection.setConnection(dataConnection);
         });
 
         it('should not be undefined', () => {
@@ -102,7 +103,7 @@ describe('AbstractPeerConnection test', () => {
     });
 
     after(() => {
-        peerConnection.connection = undefined;
+        peerConnection.setConnection(undefined);
     });
 
 });

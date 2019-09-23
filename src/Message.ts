@@ -1,6 +1,12 @@
 
+export interface MessageData {
 
-export class Message {
+    readonly id: number;
+    readonly type: string;
+    readonly data: any;
+}
+
+export class Message implements MessageData {
     
     readonly id: number;
     readonly type: string;
@@ -22,7 +28,7 @@ export class Message {
         this.data = data;
     }
 
-    toData() {
+    toData(): MessageData {
         return {
             id: this.id,
             type: this.type,

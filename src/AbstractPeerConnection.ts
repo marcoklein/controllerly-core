@@ -1,8 +1,18 @@
 
 
 import { DataConnection } from 'peerjs';
-import { Message } from './Message';
+import { Message, MessageData } from './Message';
 import { MessageManager } from './MessageManager';
+import { TypedEvent } from './TypedEvent';
+
+export enum ConnectionState {
+    /**
+     * Client and server are connecting and exchanging authentication and handshake messages.
+     */
+    CONNECTING,
+    CONNECTED,
+    DISCONNECTED
+}
 
 /**
  * Super class of the client and server connection.
@@ -14,6 +24,10 @@ import { MessageManager } from './MessageManager';
  * Internally peerjs is used.
  */
 export abstract class AbstractPeerConnection {
+
+    private _state: ConnectionState;
+
+    readonly onStateChange: TypedEvent<ConnectionState> = new TypedEvent<ConnectionState>();
 
     /**
      * Internally used data channel for communication.
@@ -50,7 +64,7 @@ export abstract class AbstractPeerConnection {
     
     /* Abstract methods */
     
-    protected abstract onMessage(msg: Message): void;
+    protected abstract onMessage(msg: MessageData): void;
 
     protected abstract onConnectionClose(): void;
 
@@ -143,11 +157,13 @@ export abstract class AbstractPeerConnection {
 
     private onConnectionCloseCallback = () => {
         this.clearTimeouts();
+        this._state = ConnectionState.DISCONNECTED;
         this.onConnectionClose();
     }
 
     private onConnectionErrorCallback = (err: any) => {
         this.clearTimeouts();
+        this._state = ConnectionState.DISCONNECTED;
         this.onConnectionError(err);
     }
 
@@ -156,8 +172,10 @@ export abstract class AbstractPeerConnection {
     
     /**
      * Sets the internally used DataConnection.
+     * 
+     * All listeners are updated accordingly.
      */
-    set connection(connection: DataConnection | undefined) {
+    setConnection(connection: DataConnection | undefined) {
         if (this._connection) {
             // remove event listeners from old connection
             this._connection.off('data', this.onConnectionDataCallback);
@@ -165,10 +183,13 @@ export abstract class AbstractPeerConnection {
             this._connection.off('error', this.onConnectionErrorCallback);
             // stop keep alive
             this.clearTimeouts();
+            // clear listeners
+            this.onStateChange.removeAll();
             // stop the manager
             if (this._manager) this._manager.destroy();
             this._manager = undefined;
         }
+        this._state = ConnectionState.DISCONNECTED;
         this._connection = connection;
         if (this._connection) {
             // add listeners to new connection
@@ -176,7 +197,12 @@ export abstract class AbstractPeerConnection {
             this._connection.on('close', this.onConnectionCloseCallback);
             this._connection.on('error', this.onConnectionErrorCallback);
             this._manager = new MessageManager();
+            this._state = ConnectionState.CONNECTING;
         }
+    }
+
+    protected changeConnectionState(state: ConnectionState) {
+        this.onStateChange.emit(state);
     }
 
     get connection(): DataConnection | undefined {
@@ -193,6 +219,10 @@ export abstract class AbstractPeerConnection {
 
     get manager(): MessageManager | undefined {
         return this._manager;
+    }
+
+    get state(): ConnectionState {
+        return this._state;
     }
 
 }
