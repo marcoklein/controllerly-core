@@ -19,7 +19,8 @@
     "url": "git+https://github.com/marcoklein/controllerly-core.git"
   },
   "files": [
-    "lib/**/*"
+    "lib/**/*",
+    "src/**/*"
   ],
   "keywords": [
     "Gamepad",
