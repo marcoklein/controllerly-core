@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/controllerly-core.svg)](https://badge.fury.io/js/controllerly-core)
+
 # controllerly-core
 Controllerly Core for Robust Connection Management with WebRTC.
 
