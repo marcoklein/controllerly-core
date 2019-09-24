@@ -205,6 +205,8 @@ export class ControllerlyServer {
         let stateListener: Listener<ConnectionState> = (state) => {
             if (state === ConnectionState.CONNECTED) {
                 // TODO remove from connecting list
+            } else if (state === ConnectionState.DISCONNECTED) {
+                // TODO remove from server and destroy hosted connection
             }
         };
 
