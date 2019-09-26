@@ -1,30 +1,25 @@
 import { expect } from 'chai';
 import { delay } from './TestUtils';
 
-//import { ControllerlyServer } from '../src/ControllerlyServer';
-//import { ControllerlyClient } from '../src/ControllerlyClient';
+import { ControllerlyServer } from '../src/ControllerlyServer';
+import { ControllerlyClient } from '../src/ControllerlyClient';
 
-describe('TestTemplate test', () => {
+/**
+ * Testing Server and Client communication through HostedConnections.
+ */
 
 
-    describe('#method() - comment', () => {
-        it('should succeed', () => {
-            expect(true).to.be.true;
-        });
-    });
-    
-  });
-
-/*describe('Connection test', () => {
+describe('Connection test', () => {
     let server: ControllerlyServer;
     let client: ControllerlyClient;
 
     before(() => {
+        // initialize server and client
         server = new ControllerlyServer();
         client = new ControllerlyClient();
     });
 
-    describe('Connecting', () => {
+    describe('Connection', () => {
         it('should start server', function(done) {
             server.start().then(controllerly => {
                 expect(controllerly).not.to.be.undefined;
@@ -33,6 +28,9 @@ describe('TestTemplate test', () => {
                 done(err);
             });
         });
+        it('have no connection', () => {
+            expect(server.clients).to.be.empty;
+        });
+
     });
 });
-*/
