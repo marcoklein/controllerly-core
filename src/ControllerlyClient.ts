@@ -36,6 +36,14 @@ export class ControllerlyClient extends AbstractPeerConnection {
     }
 
 
+    /**
+     * Connects to a ControllerlyServer Peer with the given connection code.
+     * The connection code is provided by the server.
+     * 
+     * The promise returns a connection Promise and resolves if the connection is fully established.
+     * 
+     * @param connectionCode 
+     */
     connect(connectionCode: string): Promise<ControllerlyClient> {
         // test if already connecting
         // only connect if currently disconnected!
