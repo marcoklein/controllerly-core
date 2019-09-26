@@ -30,7 +30,7 @@ describe('ControllerlyServer test', () => {
                 expect(server.peer).not.to.be.undefined;
                 done();
             });
-        });
+        }).timeout(10000);
         it('should be running', () => {
             expect(server.state).to.equal(ServerState.RUNNING);
         });
