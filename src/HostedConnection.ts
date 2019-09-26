@@ -1,10 +1,19 @@
-import { AbstractPeerConnection, ConnectionState } from "./AbstractPeerConnection";
+import { AbstractPeerConnection } from "./AbstractPeerConnection";
 import { Message, MessageData } from "./Message";
 import { TypedEvent } from "./TypedEvent";
 import { ControllerlyServer, ControllerlyServerDecorator } from "./ControllerlyServer";
 import { DataConnection } from "peerjs";
 
 
+export enum ConnectionState {
+    /**
+     * Client and server are connecting and exchanging authentication and handshake messages.
+     */
+    CONNECTING,
+    CONNECTED,
+    RECONNECTING,
+    DISCONNECTED
+}
 
 /**
  * Server-side representation of a ControllerlyClient connection.
@@ -14,8 +23,11 @@ import { DataConnection } from "peerjs";
  * 
  */
 export class HostedConnection extends AbstractPeerConnection {
+
+    readonly onStateChange: TypedEvent<ConnectionState> = new TypedEvent<ConnectionState>();
     
     private _server: ControllerlyServerDecorator;
+    private _state: ConnectionState;
 
     constructor(server: ControllerlyServer, connection: DataConnection) {
         super();
@@ -60,15 +72,21 @@ export class HostedConnection extends AbstractPeerConnection {
 
     gotToConnectedState() {
         // mark as connected
-        this.changeConnectionState(ConnectionState.CONNECTED);
+        this._state = ConnectionState.CONNECTED;
+        this.notifyOnStateChange();
 
         // add to connected clients list in server
     }
 
     handleDisconnect() {
-        this.changeConnectionState(ConnectionState.DISCONNECTED);
+        this._state = ConnectionState.DISCONNECTED;
+        this.notifyOnStateChange();
         // remove hosted connection from server
 
+    }
+
+    protected notifyOnStateChange() {
+        this.onStateChange.emit(this._state);
     }
 
 
@@ -87,6 +105,10 @@ export class HostedConnection extends AbstractPeerConnection {
 
     get server(): ControllerlyServer {
         return this._server.realInstance;
+    }
+
+    get state(): ConnectionState {
+        return this._state;
     }
 
 }

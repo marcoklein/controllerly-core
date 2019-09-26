@@ -2,7 +2,7 @@ import Peer, { DataConnection } from "peerjs";
 import { HostedConnection } from "./HostedConnection";
 import { TypedEvent, Listener } from "./TypedEvent";
 import { PRE_ID, CONNECTION_PROPS } from "./globals";
-import { ConnectionState } from "./AbstractPeerConnection";
+import { openPeerWithId } from "./Utils";
 
 export enum ServerState {
     STOPPED,
@@ -101,7 +101,7 @@ export class ControllerlyServer {
                 // use the preferred connection code for the first try - but then generate a random one!
                 code = numberOfTries === 0 ? code : this.generateRandomConnectionCode();
                 try {
-                    this._peer = await this.openPeerWithId(code);
+                    this._peer = await openPeerWithId(code);
 
                     this.state = ServerState.RUNNING;
                     this._connectionCode = code;
@@ -146,44 +146,7 @@ export class ControllerlyServer {
         return result;
     }
 
-    /**
-     * 
-     * @param connectionCode 
-     * @param callback 
-     */
-    private openPeerWithId(connectionCode: string): Promise<Peer> {
-        return new Promise((resolve, reject) => {
-            let peer: Peer;
-            let deregisterCallbacks = () => {
-                peer.off('open', openCallback);
-                peer.off('error', errorCallback);
-            }
-            // callback if peer with id could be created
-            let openCallback = (id: string) => {
-                deregisterCallbacks();
-                resolve(peer);
-            };
-            // callback if peer with id could not be created
-            let errorCallback = (err: any) => {
-                deregisterCallbacks();
-                reject(err);
-            }
-            // create peer
-            peer = this.createNewWebRTCPeer(PRE_ID + connectionCode, CONNECTION_PROPS);
-            peer.on('open', openCallback);
-            peer.on('error', errorCallback);
-        });
-    }
 
-    /**
-     * Creates a new peer object.
-     * 
-     * @param id 
-     * @param options 
-     */
-    protected createNewWebRTCPeer(id: string, options: Peer.PeerJSOption): Peer {
-        return new Peer(id, options);
-    }
 
     private initNewServerPeer() {
         this.peer.on('connection', this.onPeerConnection);
@@ -202,16 +165,16 @@ export class ControllerlyServer {
         let hostedConnection = new HostedConnection(this, connection);
         this._connectingClients.push(hostedConnection);
 
-        let stateListener: Listener<ConnectionState> = (state) => {
+        /*let stateListener: Listener<ConnectionState> = (state) => {
             if (state === ConnectionState.CONNECTED) {
                 // TODO remove from connecting list
             } else if (state === ConnectionState.DISCONNECTED) {
                 // TODO remove from server and destroy hosted connection
             }
-        };
+        };*/
 
         // listen for state changes
-        hostedConnection.onStateChange.on(stateListener);
+        //hostedConnection.onStateChange.on(stateListener);
     };
 
     /* Getter and Setter */

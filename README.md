@@ -20,3 +20,4 @@ https://developers.google.com/web/updates/2017/06/headless-karma-mocha-chai#runn
 
 Testing requires an installed version of Chrome.
 For complete automated tests we could add puppetteer. They install a headless Chromium: https://github.com/GoogleChrome/puppeteer.
+Or use https://www.npmjs.com/package/download-chromium.

@@ -4,16 +4,21 @@ import { delay } from './TestUtils';
 import Peer, { DataConnection } from "peerjs";
 
 import { ControllerlyServer, ServerState } from '../src/ControllerlyServer';
+import { ControllerlyClient } from '../src/ControllerlyClient';
 
 
 
 
-describe('ControllerlyServer test', () => {
+describe('ControllerlyServer test', function() {
+    // increase default timeout
+    this.timeout(10000);
 
     let server: ControllerlyServer;
+    let client: ControllerlyClient;
 
     before(() => {
         server = new ControllerlyServer();
+        client = new ControllerlyClient();
         
     });
 
@@ -30,11 +35,20 @@ describe('ControllerlyServer test', () => {
             }).catch(e => {
                 done(e);
             });
-        }).timeout(10000);
+        });
         it('should be running', () => {
             expect(server.state).to.equal(ServerState.RUNNING);
         });
     });
+
+    describe('#onConnection()', () => {
+        it('should trigger the client connected callback', done => {
+            server.onClientConnected.once(() => {
+                done();
+            });
+            server.onClientConnected.emit(null);
+        });
+    })
 
     
 });
