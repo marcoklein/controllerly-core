@@ -41,11 +41,10 @@ export class HostedConnection extends AbstractPeerConnection {
      * @param connection 
      */
     private handleInitialConnection(connection: DataConnection) {
-        // set the connection
-        this.setConnection(connection);
-
         if (connection.open) {
             console.log('Connection directly open!');
+            // set the connection
+            this.setConnection(connection);
             this.gotToConnectedState();
         } else {
             const server = this._server.realInstance;
@@ -57,6 +56,8 @@ export class HostedConnection extends AbstractPeerConnection {
             let onOpenCallback = () => {
                 removeListeners();
 
+                // set the connection
+                this.setConnection(connection);
                 this.gotToConnectedState();
             };
             let onErrorCallback = (err: any) => {
@@ -66,11 +67,11 @@ export class HostedConnection extends AbstractPeerConnection {
                 this.handleDisconnect();
             };
             connection.on('open', onOpenCallback);
-            connection.on('error', onOpenCallback);
+            connection.on('error', onErrorCallback);
         }
     }
 
-    gotToConnectedState() {
+    protected gotToConnectedState() {
         // mark as connected
         this._state = ConnectionState.CONNECTED;
         this.notifyOnStateChange();
@@ -78,11 +79,13 @@ export class HostedConnection extends AbstractPeerConnection {
         // add to connected clients list in server
     }
 
-    handleDisconnect() {
+    disconnect() {
+        throw new Error('Function not implemented yet.');
+    }
+
+    protected handleDisconnect() {
         this._state = ConnectionState.DISCONNECTED;
         this.notifyOnStateChange();
-        // remove hosted connection from server
-
     }
 
     protected notifyOnStateChange() {
@@ -90,7 +93,7 @@ export class HostedConnection extends AbstractPeerConnection {
     }
 
 
-    protected onMessage(msg: MessageData): void {
+    protected onMessageCallback(msg: MessageData): void {
     }
     
     protected onConnectionClose(): void {

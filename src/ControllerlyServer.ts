@@ -1,8 +1,8 @@
 import Peer, { DataConnection } from "peerjs";
-import { HostedConnection } from "./HostedConnection";
+import { HostedConnection, ConnectionState } from "./HostedConnection";
 import { TypedEvent, Listener } from "./TypedEvent";
 import { PRE_ID, CONNECTION_PROPS } from "./globals";
-import { openPeerWithId } from "./Utils";
+import { openPeerWithId, removeElementFromArray } from "./Utils";
 
 export enum ServerState {
     STOPPED,
@@ -165,16 +165,28 @@ export class ControllerlyServer {
         let hostedConnection = new HostedConnection(this, connection);
         this._connectingClients.push(hostedConnection);
 
-        /*let stateListener: Listener<ConnectionState> = (state) => {
+        let stateListener: Listener<ConnectionState> = (state) => {
             if (state === ConnectionState.CONNECTED) {
-                // TODO remove from connecting list
+                // switch to connected
+                // remove from connecting list
+                removeElementFromArray(this._connectingClients, hostedConnection);
+                // add to connected list
+                this.clients.push(hostedConnection);
+
+                this.onClientConnected.emit(hostedConnection);
             } else if (state === ConnectionState.DISCONNECTED) {
-                // TODO remove from server and destroy hosted connection
+                // remove from server and destroy hosted connection
+                // remove from connected or connecting list
+                removeElementFromArray(this._connectingClients, hostedConnection);
+                removeElementFromArray(this.clients, hostedConnection);
+
+                // remove
+                this.onClientDisconnected.emit(hostedConnection);
             }
-        };*/
+        };
 
         // listen for state changes
-        //hostedConnection.onStateChange.on(stateListener);
+        hostedConnection.onStateChange.on(stateListener);
     };
 
     /* Getter and Setter */

@@ -35,7 +35,11 @@ export class DataConnectionMock implements DataConnection {
 
 class AbstractPeerConnectionMock extends AbstractPeerConnection {
 
-    protected onMessage(msg: Message): void {
+    setConnection(connection: DataConnection) {
+        super.setConnection(connection);
+    }
+
+    protected onMessageCallback(msg: Message): void {
         throw new Error("Method not implemented.");
     }
     protected onConnectionClose(): void {

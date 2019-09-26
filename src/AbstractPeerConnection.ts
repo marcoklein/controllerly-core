@@ -31,7 +31,9 @@ export abstract class AbstractPeerConnection {
      */
     private _lastMessageId: number = 0;
     
-    private _manager: MessageManager | undefined;
+    protected _manager: MessageManager | undefined;
+
+    readonly onMessage: TypedEvent<MessageData> = new TypedEvent<MessageData>();
 
 
     /* Keep Alive */
@@ -51,7 +53,7 @@ export abstract class AbstractPeerConnection {
     
     /* Abstract methods */
     
-    protected abstract onMessage(msg: MessageData): void;
+    protected abstract onMessageCallback(msg: MessageData): void;
 
     protected abstract onConnectionClose(): void;
 
@@ -90,6 +92,20 @@ export abstract class AbstractPeerConnection {
         this.resetKeepAliveTimer();
 
         return message;
+    }
+
+    
+    /**
+     * Disconnectes completely from the server, without the chance of reconnecting.
+     */
+    disconnect() {
+        //this.sendMessage('DISCONNECT');
+        // message is not sent when calling connection.close() immediately.
+        // => return Promise()?
+        // without a disconnect message, the WebRTC connection remains open for ~10s before it closes
+        // => maybe the keep alive functionality fixes this/gets faster feedback, that the connection is closed
+        // however, then the server does not know if the client wants to reconnect
+        this.connection.close();
     }
 
     /* Keep Alive */
@@ -132,9 +148,12 @@ export abstract class AbstractPeerConnection {
             // handle internal keep alive messages
             if (msg.type === 'PING') {
                 // do nothing
+            } else if (msg.type === 'DISCONNECT') {
+                this.connection.close();
             } else {
                 // inform listener
-                this.onMessage(msg);
+                this.onMessage.emit(msg);
+                this.onMessageCallback(msg);
             }
 
         } else {
@@ -160,7 +179,7 @@ export abstract class AbstractPeerConnection {
      * 
      * All listeners are updated accordingly.
      */
-    setConnection(connection: DataConnection | undefined) {
+    protected setConnection(connection: DataConnection | undefined) {
         if (this._connection) {
             // remove event listeners from old connection
             this._connection.off('data', this.onConnectionDataCallback);

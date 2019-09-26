@@ -65,3 +65,10 @@ export function connectToPeerWithId(peer: Peer, connectionCode: string): Promise
         connection.on('error', errorCallback);
     });
 }
+
+export function removeElementFromArray<T>(array: T[], val: T) {
+    let index = array.indexOf(val);
+    if (index !== -1) {
+        array.splice(index, 1);
+    }
+}

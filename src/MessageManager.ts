@@ -94,10 +94,16 @@ export class MessageManager {
 
     /* Getter and Setter */
 
+    /**
+     * Number of messages that still need to be acknowledged by the receiver.
+     */
     get pendingCount(): number {
         return this._pendingCount;
     }
 
+    /**
+     * Returns all pending (not acknowledged) messages.
+     */
     get pendingMessages(): {[key: number]: Message} {
         return this._pendingMessages;
     }

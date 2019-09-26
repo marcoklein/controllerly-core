@@ -78,6 +78,7 @@ export class ControllerlyClient extends AbstractPeerConnection {
         });
     }
 
+
     private initNewConnection() {
 
 
@@ -85,13 +86,20 @@ export class ControllerlyClient extends AbstractPeerConnection {
 
 
     
-    protected onMessage(msg: MessageData): void {
+    protected onMessageCallback(msg: MessageData): void {
     }
     
     protected onConnectionClose(): void {
-
+        this._state = ClientState.DISCONNECTED;
     }
     protected onConnectionError(err: any): void {
+        this._state = ClientState.DISCONNECTED;
+    }
 
+
+    /* Getter and Setter */
+
+    get state(): ClientState {
+        return this._state;
     }
 }

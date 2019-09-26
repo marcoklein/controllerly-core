@@ -5,6 +5,7 @@ import Peer, { DataConnection } from "peerjs";
 
 import { ControllerlyServer, ServerState } from '../src/ControllerlyServer';
 import { ControllerlyClient } from '../src/ControllerlyClient';
+import { HostedConnection, ConnectionState } from '../src/HostedConnection';
 
 
 
@@ -15,6 +16,11 @@ describe('ControllerlyServer test', function() {
 
     let server: ControllerlyServer;
     let client: ControllerlyClient;
+    let hostedConnection: HostedConnection;
+    const messageData = {
+        text: 'bla',
+        number: 44
+    }
 
     before(() => {
         server = new ControllerlyServer();
@@ -43,10 +49,44 @@ describe('ControllerlyServer test', function() {
 
     describe('#onConnection()', () => {
         it('should trigger the client connected callback', done => {
-            server.onClientConnected.once(() => {
+            server.onClientConnected.once((conn) => {
+                hostedConnection = conn
                 done();
             });
-            server.onClientConnected.emit(null);
+            client.connect(server.connectionCode);
+        });
+        it('should return a hosted connection', () => {
+            expect(hostedConnection).not.to.be.undefined;
+            expect(hostedConnection.state).to.equal(ConnectionState.CONNECTED);
+            expect(hostedConnection.isConnected).to.be.true;
+        });
+        it('should be in the clients server list', () => {
+            expect(server.clients.length).to.equal(1);
+        });
+    })
+
+    describe('HostedConnection', () => {
+        describe('#onMessage()', () => {
+            it('should receive a message', done => {
+                hostedConnection.onMessage.once((message) => {
+                    expect(message.type).to.equal('test');
+                    expect(message.data).to.deep.equal(messageData);
+                    done();
+                });
+                client.sendMessage('test', messageData)
+            });
+        });
+        describe('#on disconnect', () => {
+            before(() => {
+                client.disconnect();
+            });
+            delay(10000);
+            it('should be state disconnected', () => {
+                expect(hostedConnection.state).to.equal(ConnectionState.DISCONNECTED);
+            });
+            it('should be removed from the server', () => {
+                expect(server.clients.length).to.equal(0);
+            });
         });
     })
 
