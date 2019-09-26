@@ -1,13 +1,9 @@
-
-import './setup';
 import { expect } from 'chai';
 import 'mocha';
 import { delay } from './TestUtils';
 import Peer, { DataConnection } from "peerjs";
 
 import { ControllerlyServer, ServerState } from '../src/ControllerlyServer';
-import { Server } from 'mock-socket';
-import { PRE_ID } from '../src/globals';
 
 
 const TEST_ID = 'testId';
@@ -15,32 +11,12 @@ const TEST_ID = 'testId';
 
 describe('ControllerlyServer test', () => {
 
-    let webRTCMockServer: Server;
     let server: ControllerlyServerMock;
 
     before(() => {
-        const fakeUrl = 'ws://localhost:8080/peerjs?key=peerjs&id=' + PRE_ID + TEST_ID + '&token=testToken';
-        //const fakeUrl = 'ws://localhost:8080/peerjs?key=peerjs&id=1&token=testToken';
-
         server = new ControllerlyServerMock();
         
-        webRTCMockServer = new Server(fakeUrl);
-        webRTCMockServer.start();
-        // start fake server
-        webRTCMockServer.on('connection', socket => {
-            console.log('on connection');
-            socket.on('message', data => {
-                socket.send('test message from mock server');
-            });
-
-            socket.send('welcome')
-        });
     });
-    describe('create mock server', () => {
-        it('should listen a mock server', () => {
-            expect(webRTCMockServer).not.to.be.undefined;
-        });
-    })
 
     describe('#start()', () => {
         it('should be stopped', () => {
@@ -78,9 +54,6 @@ describe('ControllerlyServer test', () => {
         })
     });
 
-    after(() => {
-        webRTCMockServer.close();
-    });
     
 });
 

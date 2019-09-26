@@ -1,5 +1,11 @@
 language: node_js
 node_js:
-  - "node"
+  - "node" # newest version
   - "lts/*"
   - "8"
+
+# required for testing with Karma
+dist: trusty # Ubuntu trusty needed
+sudo: requierd
+addons:
+  chrome: stable # Travis install Chrome stable

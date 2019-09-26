@@ -3,3 +3,9 @@ node_modules
 lib
 test_build
 dist
+
+# ignore log files
+*.log
+
+# temp folder of karma-parcel
+.karma-parcel
