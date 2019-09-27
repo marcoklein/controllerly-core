@@ -12,6 +12,7 @@ export function openPeerWithId(connectionCode?: string): Promise<Peer> {
         let deregisterCallbacks = () => {
             peer.off('open', openCallback);
             peer.off('error', errorCallback);
+            peer.off('close', errorCallback);
         }
         // callback if peer with id could be created
         let openCallback = (id: string) => {
@@ -19,7 +20,7 @@ export function openPeerWithId(connectionCode?: string): Promise<Peer> {
             resolve(peer);
         };
         // callback if peer with id could not be created
-        let errorCallback = (err: any) => {
+        let errorCallback = (err?: any) => {
             deregisterCallbacks();
             reject(err);
         }
@@ -31,6 +32,7 @@ export function openPeerWithId(connectionCode?: string): Promise<Peer> {
             peer = new Peer(PRE_ID + connectionCode, CONNECTION_PROPS);
         }
         peer.on('open', openCallback);
+        peer.on('close', errorCallback);
         peer.on('error', errorCallback);
     });
 }
@@ -41,14 +43,19 @@ export function openPeerWithId(connectionCode?: string): Promise<Peer> {
  * @param peer 
  * @param connectionCode 
  */
-export function connectToPeerWithId(peer: Peer, connectionCode: string): Promise<DataConnection> {
+export function connectToPeerWithId(peer: Peer, connectionCode: string, timeout: number = 5000): Promise<DataConnection> {
     return new Promise((resolve, reject) => {
         // trigger connection request
         let connection = peer.connect(PRE_ID + connectionCode);
+        let connectionTimeout = setTimeout(() => {
+            errorCallback('Timeout on connection - is Peer open?');
+        }, timeout);
 
         let deregisterCallbacks = () => {
-            peer.off('open', openCallback);
-            peer.off('error', errorCallback);
+            connection.off('open', openCallback);
+            connection.off('close', errorCallback);
+            connection.off('error', errorCallback);
+            clearTimeout(connectionTimeout);
         }
         let openCallback = () => {
             // connection is open
@@ -56,12 +63,13 @@ export function connectToPeerWithId(peer: Peer, connectionCode: string): Promise
             resolve(connection);
         };
         // callback if connection with id could not be created
-        let errorCallback = (err: any) => {
+        let errorCallback = (err?: any) => {
             deregisterCallbacks();
             reject(err);
         }
         // register listeners
         connection.on('open', openCallback);
+        connection.on('close', errorCallback);
         connection.on('error', errorCallback);
     });
 }
