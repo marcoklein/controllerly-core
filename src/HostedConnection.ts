@@ -11,7 +11,6 @@ export enum ConnectionState {
      */
     CONNECTING,
     CONNECTED,
-    RECONNECTING,
     DISCONNECTED
 }
 
@@ -44,7 +43,7 @@ export class HostedConnection extends AbstractPeerConnection {
         if (connection.open) {
             console.log('Connection directly open!');
             // set the connection
-            this.setConnection(connection);
+            this.registerConnection(connection);
             this.gotToConnectedState();
         } else {
             const server = this._server.realInstance;
@@ -57,7 +56,7 @@ export class HostedConnection extends AbstractPeerConnection {
                 removeListeners();
 
                 // set the connection
-                this.setConnection(connection);
+                this.registerConnection(connection);
                 this.gotToConnectedState();
             };
             let onErrorCallback = (err: any) => {
@@ -96,11 +95,11 @@ export class HostedConnection extends AbstractPeerConnection {
     protected onMessageCallback(msg: MessageData): void {
     }
     
-    protected onConnectionClose(): void {
+    protected onConnectionCloseCallback(): void {
         this.handleDisconnect();
     }
 
-    protected onConnectionError(err: any): void {
+    protected onConnectionErrorCallback(err: any): void {
         this.handleDisconnect();
     }
 

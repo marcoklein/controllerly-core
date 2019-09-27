@@ -1,15 +1,12 @@
 import { AbstractPeerConnection } from "./AbstractPeerConnection";
-import { Message, MessageData } from "./Message";
-import Peer = require("peerjs");
+import { MessageData } from "./Message";
+import Peer from "peerjs";
 import { TypedEvent } from "./TypedEvent";
-import { ConnectionState } from "./HostedConnection";
-import { CONNECTION_PROPS } from "./globals";
 import { openPeerWithId, connectToPeerWithId } from "./Utils";
 
 export enum ClientState {
     CONNECTING,
     CONNECTED,
-    RECONNECTING,
     DISCONNECTED
 }
 
@@ -29,7 +26,7 @@ export class ControllerlyClient extends AbstractPeerConnection {
 
     private _state: ClientState = ClientState.DISCONNECTED;
 
-    readonly onStateListener: TypedEvent<ConnectionState> = new TypedEvent<ConnectionState>();
+    readonly onStateChange: TypedEvent<ClientState> = new TypedEvent<ClientState>();
     
     constructor() {
         super();
@@ -61,9 +58,8 @@ export class ControllerlyClient extends AbstractPeerConnection {
                 connectToPeerWithId(peer, connectionCode).then(connection => {
                     // peer open and connected!
                     // TODO exchange initial connection details
-                    this.setConnection(connection)
+                    this.registerConnection(connection)
                     this._state = ClientState.CONNECTED;
-                    this.initNewConnection();
                     resolve(this);
                 }).catch(e => {
                     this.peer.destroy();
@@ -78,23 +74,24 @@ export class ControllerlyClient extends AbstractPeerConnection {
         });
     }
 
-
-    private initNewConnection() {
-
-
+    protected notifyOnStateChange() {
+        this.onStateChange.emit(this._state);
     }
 
+    /* Add methods to send button/axis updates */
 
     
     protected onMessageCallback(msg: MessageData): void {
     }
     
-    protected onConnectionClose(): void {
+    protected onConnectionCloseCallback(): void {
         this._state = ClientState.DISCONNECTED;
     }
-    protected onConnectionError(err: any): void {
+    protected onConnectionErrorCallback(err: any): void {
         this._state = ClientState.DISCONNECTED;
     }
+
+
 
 
     /* Getter and Setter */

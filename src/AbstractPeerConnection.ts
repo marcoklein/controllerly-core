@@ -55,9 +55,9 @@ export abstract class AbstractPeerConnection {
     
     protected abstract onMessageCallback(msg: MessageData): void;
 
-    protected abstract onConnectionClose(): void;
+    protected abstract onConnectionCloseCallback(): void;
 
-    protected abstract onConnectionError(err: any): void;
+    protected abstract onConnectionErrorCallback(err: any): void;
 
     /* Message methods */
 
@@ -134,7 +134,7 @@ export abstract class AbstractPeerConnection {
     
     /* Callbacks */
 
-    private onConnectionDataCallback = (msg: Message | any) => {
+    private _onConnectionDataCallback = (msg: Message | any) => {
         if (this._manager === undefined || this._connection === undefined) {
             return;
         }
@@ -161,14 +161,14 @@ export abstract class AbstractPeerConnection {
         }
     }
 
-    private onConnectionCloseCallback = () => {
+    private _onConnectionCloseCallback = () => {
         this.clearTimeouts();
-        this.onConnectionClose();
+        this.onConnectionCloseCallback();
     }
 
-    private onConnectionErrorCallback = (err: any) => {
+    private _onConnectionErrorCallback = (err: any) => {
         this.clearTimeouts();
-        this.onConnectionError(err);
+        this.onConnectionErrorCallback(err);
     }
 
 
@@ -179,12 +179,12 @@ export abstract class AbstractPeerConnection {
      * 
      * All listeners are updated accordingly.
      */
-    protected setConnection(connection: DataConnection | undefined) {
+    protected registerConnection(connection: DataConnection | undefined) {
         if (this._connection) {
             // remove event listeners from old connection
-            this._connection.off('data', this.onConnectionDataCallback);
-            this._connection.off('close', this.onConnectionCloseCallback);
-            this._connection.off('error', this.onConnectionErrorCallback);
+            this._connection.off('data', this._onConnectionDataCallback);
+            this._connection.off('close', this._onConnectionCloseCallback);
+            this._connection.off('error', this._onConnectionErrorCallback);
             // stop keep alive
             this.clearTimeouts();
             // stop the manager
@@ -194,9 +194,9 @@ export abstract class AbstractPeerConnection {
         this._connection = connection;
         if (this._connection) {
             // add listeners to new connection
-            this._connection.on('data', this.onConnectionDataCallback);
-            this._connection.on('close', this.onConnectionCloseCallback);
-            this._connection.on('error', this.onConnectionErrorCallback);
+            this._connection.on('data', this._onConnectionDataCallback);
+            this._connection.on('close', this._onConnectionCloseCallback);
+            this._connection.on('error', this._onConnectionErrorCallback);
             this._manager = new MessageManager();
         }
     }
