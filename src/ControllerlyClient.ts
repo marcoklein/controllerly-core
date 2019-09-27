@@ -99,4 +99,12 @@ export class ControllerlyClient extends AbstractPeerConnection {
     get state(): ClientState {
         return this._state;
     }
+
+    get isConnecting(): boolean {
+        return this._state === ClientState.CONNECTING;
+    }
+
+    get isDisconnected(): boolean {
+        return this._state === ClientState.DISCONNECTED;
+    }
 }
