@@ -48,7 +48,7 @@ export function connectToPeerWithId(peer: Peer, connectionCode: string, timeout:
         // trigger connection request
         let connection = peer.connect(PRE_ID + connectionCode);
         let connectionTimeout = setTimeout(() => {
-            errorCallback('Timeout on connection - is Peer open?');
+            errorCallback('Timeout on connection to external Peer.');
         }, timeout);
 
         let deregisterCallbacks = () => {

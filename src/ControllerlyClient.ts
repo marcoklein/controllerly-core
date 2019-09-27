@@ -44,6 +44,7 @@ export class ControllerlyClient extends AbstractPeerConnection {
             openPeerWithId().then((peer: Peer) => {
                 // success
                 this.peer = peer;
+                console.log('peer opened!');
 
                 // listen for new data connection
                 connectToPeerWithId(peer, connectionCode).then(connection => {
@@ -51,8 +52,10 @@ export class ControllerlyClient extends AbstractPeerConnection {
                     // TODO exchange initial connection details
                     this.registerConnection(connection);
                     this.changeState(ConnectionState.CONNECTED);
+                    console.log('conn open!');
                     resolve(this);
                 }).catch(e => {
+                    console.log('conn err!');
                     this.peer.destroy();
                     this.peer = null;
                     this.changeState(ConnectionState.DISCONNECTED);

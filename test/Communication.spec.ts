@@ -9,7 +9,9 @@ import { ControllerlyClient } from '../src/ControllerlyClient';
  */
 
 
-describe('Connection test', () => {
+describe('Connection test', function() {
+    this.timeout(20000);
+    
     let server: ControllerlyServer;
     let client: ControllerlyClient;
 

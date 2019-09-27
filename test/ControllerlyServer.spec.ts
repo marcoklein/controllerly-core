@@ -12,7 +12,7 @@ import { ConnectionState } from '../src/AbstractPeerConnection';
 
 describe('ControllerlyServer test', function() {
     // increase default timeout
-    this.timeout(10000);
+    this.timeout(20000);
 
     let server: ControllerlyServer;
     let client: ControllerlyClient;

@@ -11,26 +11,34 @@ import { ConnectionState } from '../src/AbstractPeerConnection';
 
 describe('ControllerlyClient test', function() {
     // increase default timeout
-    this.timeout(10000);
+    this.timeout(20000);
 
     let server: ControllerlyServer;
     let client: ControllerlyClient;
 
-    before(async () => {
+    before(() => {
         server = new ControllerlyServer();
         client = new ControllerlyClient();
-
-        // start the server
-        await server.start();
     });
 
     describe('#connect', () => {
+        it('should fail to connect', done => {
+            let randomConnectionCode = 100 * Math.random() * 10000000000;
+            client.connect('' + randomConnectionCode).catch(() => {
+                done();
+            });
+        });
+
+        it('should start the server', () => {
+            return server.start();
+        });
+
         it('should be disconnected', () => {
             expect(client.isConnected).to.be.false;
             expect(client.isConnecting).to.be.false;
             expect(client.isDisconnected).to.be.true;
             expect(client.state).to.equal(ConnectionState.DISCONNECTED);
-        })
+        });
         it('should connect to the server', async () => {
             try {
                 await client.connect(server.connectionCode);
