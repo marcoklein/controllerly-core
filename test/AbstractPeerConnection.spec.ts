@@ -34,18 +34,18 @@ export class DataConnectionMock implements DataConnection {
 }
 
 class AbstractPeerConnectionMock extends AbstractPeerConnection {
-
-    setConnection(connection: DataConnection) {
-        super.setConnection(connection);
+    registerConnection(connection: DataConnection) {
+        super.registerConnection(connection);
     }
 
     protected onMessageCallback(msg: Message): void {
         throw new Error("Method not implemented.");
     }
-    protected onConnectionClose(): void {
+
+    protected onConnectionCloseCallback(): void {
         throw new Error("Method not implemented.");
     }
-    protected onConnectionError(err: any): void {
+    protected onConnectionErrorCallback(err: any): void {
         throw new Error("Method not implemented.");
     }
 
@@ -75,7 +75,7 @@ describe('AbstractPeerConnection test', () => {
         let message: Message;
 
         before(() => {
-            peerConnection.setConnection(dataConnection);
+            peerConnection.registerConnection(dataConnection);
         });
 
         it('should not be undefined', () => {
@@ -107,7 +107,7 @@ describe('AbstractPeerConnection test', () => {
     });
 
     after(() => {
-        peerConnection.setConnection(undefined);
+        peerConnection.registerConnection(undefined);
     });
 
 });
