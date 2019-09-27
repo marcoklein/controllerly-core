@@ -1,12 +1,10 @@
 import { expect } from 'chai';
 import 'mocha';
 import { delay } from './TestUtils';
-import Peer, { DataConnection } from "peerjs";
 
-import { ControllerlyServer, ServerState } from '../src/ControllerlyServer';
-import { ControllerlyClient, ClientState } from '../src/ControllerlyClient';
-import { HostedConnection } from '../src/HostedConnection';
-import { Listener } from '../src/TypedEvent';
+import { ControllerlyServer } from '../src/ControllerlyServer';
+import { ControllerlyClient } from '../src/ControllerlyClient';
+import { ConnectionState } from '../src/AbstractPeerConnection';
 
 
 
@@ -18,15 +16,21 @@ describe('ControllerlyClient test', function() {
     let server: ControllerlyServer;
     let client: ControllerlyClient;
 
-    before(() => {
+    before(async () => {
         server = new ControllerlyServer();
         client = new ControllerlyClient();
 
         // start the server
-        return server.start();
+        await server.start();
     });
 
     describe('#connect', () => {
+        it('should be disconnected', () => {
+            expect(client.isConnected).to.be.false;
+            expect(client.isConnecting).to.be.false;
+            expect(client.isDisconnected).to.be.true;
+            expect(client.state).to.equal(ConnectionState.DISCONNECTED);
+        })
         it('should connect to the server', async () => {
             try {
                 await client.connect(server.connectionCode);
@@ -36,7 +40,7 @@ describe('ControllerlyClient test', function() {
         });
         it('should be connected', () => {
             expect(client.isConnected).to.be.true;
-            expect(client.state).to.equal(ClientState.CONNECTED);
+            expect(client.state).to.equal(ConnectionState.CONNECTED);
             expect(client.connection).not.to.be.undefined;
         });
     });
@@ -66,8 +70,10 @@ describe('ControllerlyClient test', function() {
             client.disconnect();
         });
         it('should disconnect', () => {
+            expect(client.isConnecting).to.be.false;
             expect(client.isConnected).to.be.false;
-            expect(client.state).to.equal(ClientState.DISCONNECTED);
+            expect(client.isDisconnected).to.be.true;
+            expect(client.state).to.equal(ConnectionState.DISCONNECTED);
         })
     })
 

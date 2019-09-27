@@ -1,8 +1,9 @@
 import Peer, { DataConnection } from "peerjs";
-import { HostedConnection, ConnectionState } from "./HostedConnection";
+import { HostedConnection } from "./HostedConnection";
 import { TypedEvent, Listener } from "./TypedEvent";
 import { PRE_ID, CONNECTION_PROPS } from "./globals";
 import { openPeerWithId, removeElementFromArray } from "./Utils";
+import { ConnectionState } from "./AbstractPeerConnection";
 
 export enum ServerState {
     STOPPED,

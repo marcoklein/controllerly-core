@@ -5,6 +5,15 @@ import { Message, MessageData } from './Message';
 import { MessageManager } from './MessageManager';
 import { TypedEvent } from './TypedEvent';
 
+export enum ConnectionState {
+    /**
+     * Client and server are connecting and exchanging authentication and handshake messages.
+     */
+    CONNECTING,
+    CONNECTED,
+    DISCONNECTED
+}
+
 /**
  * Super class of the client and server connection.
  * 
@@ -15,6 +24,11 @@ import { TypedEvent } from './TypedEvent';
  * Internally peerjs is used.
  */
 export abstract class AbstractPeerConnection {
+
+    
+    private _state: ConnectionState = ConnectionState.DISCONNECTED;
+    readonly onStateChange: TypedEvent<ConnectionState> = new TypedEvent<ConnectionState>();
+    
 
     /**
      * Internally used data channel for communication.
@@ -131,6 +145,15 @@ export abstract class AbstractPeerConnection {
         clearTimeout(this._keepAliveTimeout);
     }
 
+    /* State */
+    protected changeState(state: ConnectionState) {
+        this._state = state;
+        this.notifyOnStateChange();
+    }
+
+    private notifyOnStateChange() {
+        this.onStateChange.emit(this._state);
+    }
     
     /* Callbacks */
 
@@ -205,10 +228,6 @@ export abstract class AbstractPeerConnection {
         return this._connection;
     }
 
-    get isConnected(): boolean {
-        return this._connection !== undefined && this._connection.open;
-    }
-
     get totalMessageCount(): number {
         return this._lastMessageId;
     }
@@ -217,4 +236,19 @@ export abstract class AbstractPeerConnection {
         return this._manager;
     }
 
+    get state(): ConnectionState {
+        return this._state;
+    }
+
+    get isConnected(): boolean {
+        return this._connection !== undefined && this._connection.open;
+    }
+    
+    get isConnecting(): boolean {
+        return this._state === ConnectionState.CONNECTING;
+    }
+
+    get isDisconnected(): boolean {
+        return this._state === ConnectionState.DISCONNECTED;
+    }
 }

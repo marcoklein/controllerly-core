@@ -1,14 +1,8 @@
-import { AbstractPeerConnection } from "./AbstractPeerConnection";
+import { AbstractPeerConnection, ConnectionState } from "./AbstractPeerConnection";
 import { MessageData } from "./Message";
 import Peer from "peerjs";
-import { TypedEvent } from "./TypedEvent";
 import { openPeerWithId, connectToPeerWithId } from "./Utils";
 
-export enum ClientState {
-    CONNECTING,
-    CONNECTED,
-    DISCONNECTED
-}
 
 export class ControllerlyClient extends AbstractPeerConnection {
 
@@ -24,10 +18,7 @@ export class ControllerlyClient extends AbstractPeerConnection {
     private peer: Peer;
     private _connectionPromise: Promise<ControllerlyClient>;
 
-    private _state: ClientState = ClientState.DISCONNECTED;
 
-    readonly onStateChange: TypedEvent<ClientState> = new TypedEvent<ClientState>();
-    
     constructor() {
         super();
     }
@@ -44,11 +35,11 @@ export class ControllerlyClient extends AbstractPeerConnection {
     connect(connectionCode: string): Promise<ControllerlyClient> {
         // test if already connecting
         // only connect if currently disconnected!
-        if (this._state !== ClientState.DISCONNECTED) {
+        if (this.state !== ConnectionState.DISCONNECTED) {
             console.warn('Called connect but ControllerlyClient is already connecting or connected.');
             return this._connectionPromise;
         }
-        this._state = ClientState.CONNECTING;
+        this.changeState(ConnectionState.CONNECTING);
         return this._connectionPromise = new Promise((resolve, reject) => {
             openPeerWithId().then((peer: Peer) => {
                 // success
@@ -58,37 +49,34 @@ export class ControllerlyClient extends AbstractPeerConnection {
                 connectToPeerWithId(peer, connectionCode).then(connection => {
                     // peer open and connected!
                     // TODO exchange initial connection details
-                    this.registerConnection(connection)
-                    this._state = ClientState.CONNECTED;
+                    this.registerConnection(connection);
+                    this.changeState(ConnectionState.CONNECTED);
                     resolve(this);
                 }).catch(e => {
                     this.peer.destroy();
                     this.peer = null;
+                    this.changeState(ConnectionState.DISCONNECTED);
                     reject(e);
                 });
 
             }).catch(e => {
                 // no success with connection
+                this.changeState(ConnectionState.DISCONNECTED);
                 reject(e);
             });
         });
     }
 
-    protected notifyOnStateChange() {
-        this.onStateChange.emit(this._state);
-    }
-
     /* Add methods to send button/axis updates */
 
-    
     protected onMessageCallback(msg: MessageData): void {
     }
     
     protected onConnectionCloseCallback(): void {
-        this._state = ClientState.DISCONNECTED;
+        this.changeState(ConnectionState.DISCONNECTED);
     }
     protected onConnectionErrorCallback(err: any): void {
-        this._state = ClientState.DISCONNECTED;
+        this.changeState(ConnectionState.DISCONNECTED);
     }
 
 
@@ -96,15 +84,5 @@ export class ControllerlyClient extends AbstractPeerConnection {
 
     /* Getter and Setter */
 
-    get state(): ClientState {
-        return this._state;
-    }
 
-    get isConnecting(): boolean {
-        return this._state === ClientState.CONNECTING;
-    }
-
-    get isDisconnected(): boolean {
-        return this._state === ClientState.DISCONNECTED;
-    }
 }

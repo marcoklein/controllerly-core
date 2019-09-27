@@ -1,18 +1,8 @@
-import { AbstractPeerConnection } from "./AbstractPeerConnection";
-import { Message, MessageData } from "./Message";
-import { TypedEvent } from "./TypedEvent";
+import { AbstractPeerConnection, ConnectionState } from "./AbstractPeerConnection";
+import { MessageData } from "./Message";
 import { ControllerlyServer, ControllerlyServerDecorator } from "./ControllerlyServer";
 import { DataConnection } from "peerjs";
 
-
-export enum ConnectionState {
-    /**
-     * Client and server are connecting and exchanging authentication and handshake messages.
-     */
-    CONNECTING,
-    CONNECTED,
-    DISCONNECTED
-}
 
 /**
  * Server-side representation of a ControllerlyClient connection.
@@ -23,10 +13,7 @@ export enum ConnectionState {
  */
 export class HostedConnection extends AbstractPeerConnection {
 
-    readonly onStateChange: TypedEvent<ConnectionState> = new TypedEvent<ConnectionState>();
-    
     private _server: ControllerlyServerDecorator;
-    private _state: ConnectionState;
 
     constructor(server: ControllerlyServer, connection: DataConnection) {
         super();
@@ -72,8 +59,7 @@ export class HostedConnection extends AbstractPeerConnection {
 
     protected gotToConnectedState() {
         // mark as connected
-        this._state = ConnectionState.CONNECTED;
-        this.notifyOnStateChange();
+        this.changeState(ConnectionState.CONNECTED);
 
         // add to connected clients list in server
     }
@@ -83,12 +69,7 @@ export class HostedConnection extends AbstractPeerConnection {
     }
 
     protected handleDisconnect() {
-        this._state = ConnectionState.DISCONNECTED;
-        this.notifyOnStateChange();
-    }
-
-    protected notifyOnStateChange() {
-        this.onStateChange.emit(this._state);
+        this.changeState(ConnectionState.DISCONNECTED);
     }
 
 
@@ -109,8 +90,5 @@ export class HostedConnection extends AbstractPeerConnection {
         return this._server.realInstance;
     }
 
-    get state(): ConnectionState {
-        return this._state;
-    }
 
 }

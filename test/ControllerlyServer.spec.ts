@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import 'mocha';
 import { delay } from './TestUtils';
-import Peer, { DataConnection } from "peerjs";
 
 import { ControllerlyServer, ServerState } from '../src/ControllerlyServer';
 import { ControllerlyClient } from '../src/ControllerlyClient';
-import { HostedConnection, ConnectionState } from '../src/HostedConnection';
+import { HostedConnection } from '../src/HostedConnection';
+import { ConnectionState } from '../src/AbstractPeerConnection';
 
 
 
