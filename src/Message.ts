@@ -1,4 +1,7 @@
 
+/**
+ * Basic data set a message has to contain that client and server exchange.
+ */
 export interface MessageData {
 
     readonly id: number;
@@ -6,6 +9,9 @@ export interface MessageData {
     readonly data: any;
 }
 
+/**
+ * A Message is created on the sender-side and can track the sent message.
+ */
 export class Message implements MessageData {
     
     readonly id: number;

@@ -74,6 +74,12 @@ export function connectToPeerWithId(peer: Peer, connectionCode: string, timeout:
     });
 }
 
+/**
+ * Helper function doing an Array.splice(array) on the given array, removing the given value.
+ * 
+ * @param array Array to remove element from.
+ * @param val Element to remove.
+ */
 export function removeElementFromArray<T>(array: T[], val: T) {
     let index = array.indexOf(val);
     if (index !== -1) {
