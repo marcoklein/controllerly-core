@@ -43,7 +43,7 @@ export function openPeerWithId(connectionCode?: string): Promise<Peer> {
  * @param peer 
  * @param connectionCode 
  */
-export function connectToPeerWithId(peer: Peer, connectionCode: string, timeout: number = 5000): Promise<DataConnection> {
+export function connectToPeerWithId(peer: Peer, connectionCode: string, timeout: number = 10000): Promise<DataConnection> {
     return new Promise((resolve, reject) => {
         // trigger connection request
         let connection = peer.connect(PRE_ID + connectionCode);
