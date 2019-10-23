@@ -1,6 +1,6 @@
 {
   "name": "controllerly-core",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Controllerly Core for Robust Connection Management with WebRTC.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
