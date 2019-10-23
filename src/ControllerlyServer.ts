@@ -74,11 +74,6 @@ export class ControllerlyServer {
         this._peer = null;
         this.clients = [];
         this.clientsThatCouldReconnect = [];
-
-        // reset events
-        this.onClientConnected.removeAll();
-        this.onClientDisconnected.removeAll();
-        this.onClientReconnected.removeAll();
     }
 
     start(preferredConnectionCode?: string, numberOfRetries: number = 10): Promise<string> {
@@ -148,10 +143,19 @@ export class ControllerlyServer {
     }
 
 
-
     private initNewServerPeer() {
         this.peer.on('connection', this.onPeerConnection);
         // TODO listen to peer errors...
+    }
+
+    /**
+     * Remove all listeners.
+     */
+    resetListeners() {
+        // reset events
+        this.onClientConnected.removeAll();
+        this.onClientDisconnected.removeAll();
+        this.onClientReconnected.removeAll();
     }
     
 
