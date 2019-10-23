@@ -14,7 +14,8 @@
     "prepublishOnly": "npm test",
     "preversion": "npm test",
     "version": "",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "download-chromium": "download-chromium"
   },
   "repository": {
     "type": "git",
