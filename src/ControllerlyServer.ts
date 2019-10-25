@@ -18,7 +18,7 @@ export enum ServerState {
  */
 export class ControllerlyServer {
 
-    state: ServerState = ServerState.STOPPED;
+    private _state: ServerState = ServerState.STOPPED;
 
     /**
      * Server-side WebRTC peer.
@@ -59,6 +59,7 @@ export class ControllerlyServer {
 
     /* Events */
 
+    readonly onStateChange: TypedEvent<ServerState> = new TypedEvent<ServerState>();
     readonly onClientConnected: TypedEvent<HostedConnection> = new TypedEvent<HostedConnection>();
     readonly onClientDisconnected: TypedEvent<HostedConnection> = new TypedEvent<HostedConnection>();
     readonly onClientReconnected: TypedEvent<HostedConnection> = new TypedEvent<HostedConnection>();
@@ -70,21 +71,22 @@ export class ControllerlyServer {
     }
 
     private reset() {
-        this.state = ServerState.STOPPED;
+        this._state = ServerState.STOPPED;
+        this.notifyOnStateChange();
         this._peer = null;
         this.clients = [];
         this.clientsThatCouldReconnect = [];
     }
 
     start(preferredConnectionCode?: string, numberOfRetries: number = 10): Promise<string> {
-        if (this.state === ServerState.STARTING) {
+        if (this._state === ServerState.STARTING) {
             throw new Error('Server Start Error: Server is already in starting state.');
         }
         // reset variables
         this.reset();
 
-        this.state = ServerState.STARTING;
-
+        this._state = ServerState.STARTING;
+        this.notifyOnStateChange();
         
         // get code
         let code = preferredConnectionCode || this.generateRandomConnectionCode();
@@ -99,7 +101,8 @@ export class ControllerlyServer {
                 try {
                     this._peer = await openPeerWithId(code);
 
-                    this.state = ServerState.RUNNING;
+                    this._state = ServerState.RUNNING;
+                    this.notifyOnStateChange();
                     this._connectionCode = code;
 
                     this.initNewServerPeer();
@@ -115,7 +118,8 @@ export class ControllerlyServer {
                     numberOfTries++;
                     if (numberOfTries >= numberOfRetries) {
                         // return with an error
-                        this.state = ServerState.STOPPED;
+                        this._state = ServerState.STOPPED;
+                        this.notifyOnStateChange();
                         if (this._peer) this._peer.destroy();
                         this._peer = null;
                         reject(e);
@@ -146,6 +150,10 @@ export class ControllerlyServer {
     private initNewServerPeer() {
         this.peer.on('connection', this.onPeerConnection);
         // TODO listen to peer errors...
+    }
+
+    private notifyOnStateChange() {
+        this.onStateChange.emit(this._state);
     }
 
     /**
@@ -206,6 +214,10 @@ export class ControllerlyServer {
 
     get connectingClients(): HostedConnection[] {
         return this._connectingClients;
+    }
+
+    get state(): ServerState {
+        return this._state;
     }
 
 }
