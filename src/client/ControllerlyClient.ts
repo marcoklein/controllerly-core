@@ -1,7 +1,8 @@
-import { AbstractPeerConnection, ConnectionState } from "./AbstractPeerConnection";
-import { MessageData } from "./Message";
+import { AbstractPeerConnection, ConnectionState } from "../shared/AbstractPeerConnection";
+import { MessageData } from "../shared/Message";
 import Peer from "peerjs";
-import { openPeerWithId, connectToPeerWithId } from "./Utils";
+import { openPeerWithId, connectToPeerWithId } from "../Utils";
+import { ButtonEvent } from "../shared/ControllerlyEvents";
 
 
 export class ControllerlyClient extends AbstractPeerConnection {
@@ -66,6 +67,9 @@ export class ControllerlyClient extends AbstractPeerConnection {
             });
         });
     }
+
+    /* TODO Send Controllerly Events */
+
 
     /* Add methods to send button/axis updates */
 

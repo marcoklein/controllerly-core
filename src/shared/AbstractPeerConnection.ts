@@ -1,9 +1,9 @@
 
 
 import { DataConnection } from 'peerjs';
-import { Message, MessageData } from './Message';
+import { Message, MessageInterface } from './Message';
 import { MessageManager } from './MessageManager';
-import { TypedEvent } from './TypedEvent';
+import { TypedEvent } from '../TypedEvent';
 
 export enum ConnectionState {
     /**
@@ -47,7 +47,7 @@ export abstract class AbstractPeerConnection {
     
     protected _manager: MessageManager | undefined;
 
-    readonly onMessage: TypedEvent<MessageData> = new TypedEvent<MessageData>();
+    readonly onMessage: TypedEvent<MessageInterface> = new TypedEvent<MessageInterface>();
 
 
     /* Keep Alive */
@@ -67,7 +67,7 @@ export abstract class AbstractPeerConnection {
     
     /* Abstract methods */
     
-    protected abstract onMessageCallback(msg: MessageData): void;
+    protected abstract onMessageCallback(msg: MessageInterface): void;
 
     protected abstract onConnectionCloseCallback(): void;
 

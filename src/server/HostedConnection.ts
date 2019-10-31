@@ -1,5 +1,5 @@
-import { AbstractPeerConnection, ConnectionState } from "./AbstractPeerConnection";
-import { MessageData } from "./Message";
+import { AbstractPeerConnection, ConnectionState } from "../shared/AbstractPeerConnection";
+import { MessageInterface } from "../shared/Message";
 import { ControllerlyServer, ControllerlyServerDecorator } from "./ControllerlyServer";
 import { DataConnection } from "peerjs";
 
@@ -73,7 +73,7 @@ export class HostedConnection extends AbstractPeerConnection {
     }
 
 
-    protected onMessageCallback(msg: MessageData): void {
+    protected onMessageCallback(msg: MessageInterface): void {
     }
     
     protected onConnectionCloseCallback(): void {
