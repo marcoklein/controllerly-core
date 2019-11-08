@@ -1,6 +1,6 @@
 [![npm version](https://badge.fury.io/js/controllerly-core.svg)](https://badge.fury.io/js/controllerly-core)
 [![Build Status](https://travis-ci.org/marcoklein/controllerly-core.svg?branch=master)](https://travis-ci.org/marcoklein/controllerly-core)
-[![Known Vulnerabilities](https://snyk.io//test/github/marcoklein/controllerly-core/badge.svg?targetFile=package.json)](https://snyk.io//test/github/marcoklein/controllerly-core?targetFile=package.json)
+[![Known Vulnerabilities](https://snyk.io//test/github/marcoklein/controllerly-core/badge.svg?targetFile=package.json)](https://snyk.io//test/github/marcoklein/controllerly-core?targetFile=package.json) [![Greenkeeper badge](https://badges.greenkeeper.io/marcoklein/controllerly-core.svg)](https://greenkeeper.io/)
 ![NPM](https://img.shields.io/npm/l/controllerly)
 
 
