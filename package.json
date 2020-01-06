@@ -57,6 +57,6 @@
     "typescript": "^3.6.3"
   },
   "dependencies": {
-    "peerjs": "^1.1.0"
+    "peerjs": "^1.2.0"
   }
 }
