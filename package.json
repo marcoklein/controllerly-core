@@ -10,12 +10,13 @@
     "build": "rimraf lib && tsc",
     "build:test": "rimraf test_build && parcel build test/web/*.html -d test_build --public-url ./",
     "webtest": "rimraf dist && parcel test/web/*.html --open",
-    "prepare": "npm run build",
+    "prepare": "npm run snyk-protect && npm run build",
     "prepublishOnly": "npm test",
     "preversion": "npm test",
     "version": "",
     "postversion": "git push && git push --tags",
-    "download-chromium": "download-chromium"
+    "download-chromium": "download-chromium",
+    "snyk-protect": "snyk protect"
   },
   "repository": {
     "type": "git",
@@ -57,6 +58,8 @@
     "typescript": "^3.6.3"
   },
   "dependencies": {
-    "peerjs": "^1.1.0"
-  }
+    "peerjs": "^1.1.0",
+    "snyk": "^1.316.1"
+  },
+  "snyk": true
 }
